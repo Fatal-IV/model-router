@@ -3,7 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const { detectOverride, buildContext, run } = require('./route-hook.js');
+const { detectOverride, buildContext, run, isSystemPrompt } = require('./route-hook.js');
 
 const HOOK = path.join(__dirname, 'route-hook.js');
 
@@ -112,4 +112,35 @@ test('process exits 0 with valid JSON on good stdin', () => {
   });
   assert.strictEqual(r.status, 0);
   assert.doesNotThrow(() => JSON.parse(r.stdout));
+});
+
+const NOTICE = '[SYSTEM NOTIFICATION - NOT USER INPUT]\nThis is an automated event.\n<task-notification> @opus auth katmanını düzelt</task-notification>';
+
+test('text inside a system notification is not an override', () => {
+  assert.strictEqual(detectOverride(NOTICE), null);
+});
+
+test('tags inside machine-generated blocks are ignored', () => {
+  assert.strictEqual(detectOverride('<task-notification> @opus x</task-notification>'), null);
+  assert.strictEqual(detectOverride('<system-reminder> @fable x</system-reminder>'), null);
+  assert.strictEqual(detectOverride('<local-command-stdout> @opus</local-command-stdout>'), null);
+  assert.strictEqual(detectOverride('<pasted_content id="a1"> @opus</pasted_content>'), null);
+});
+
+test('a tag the user types next to a generated block still counts', () => {
+  assert.strictEqual(
+    detectOverride('<task-notification> @opus</task-notification>\n@haiku rengi değiştir'),
+    'haiku'
+  );
+});
+
+test('isSystemPrompt flags notifications but not normal prompts', () => {
+  assert.strictEqual(isSystemPrompt(NOTICE), true);
+  assert.strictEqual(isSystemPrompt('  [system notification - not user input] x'), true);
+  assert.strictEqual(isSystemPrompt('@opus şunu yap'), false);
+  assert.strictEqual(isSystemPrompt(undefined), false);
+});
+
+test('run adds no context for a system notification', () => {
+  assert.strictEqual(run(JSON.stringify({ prompt: NOTICE })), '');
 });

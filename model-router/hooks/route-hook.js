@@ -7,9 +7,18 @@ const TAG = new RegExp(
   'iu'
 );
 
+// Sistemin ürettiği bildirimler ve makine tarafından eklenen bloklar kullanıcının yazdığı istek değildir.
+const SYSTEM_HEADER = /^\s*\[system notification/i;
+const GENERATED_BLOCK =
+  /<(task-notification|system-reminder|local-command-stdout|local-command-caveat|pasted_content|agent-message)\b[^>]*>[\s\S]*?<\/\1>/gi;
+
+function isSystemPrompt(prompt) {
+  return typeof prompt === 'string' && SYSTEM_HEADER.test(prompt);
+}
+
 function detectOverride(prompt) {
-  if (typeof prompt !== 'string') return null;
-  const m = TAG.exec(prompt);
+  if (typeof prompt !== 'string' || isSystemPrompt(prompt)) return null;
+  const m = TAG.exec(prompt.replace(GENERATED_BLOCK, ' '));
   return m ? m[1].toLowerCase() : null;
 }
 
@@ -38,7 +47,7 @@ function buildContext(override, env = process.env) {
 function run(stdinText) {
   try {
     const event = JSON.parse(stdinText);
-    if (!event || typeof event.prompt !== 'string') return '';
+    if (!event || typeof event.prompt !== 'string' || isSystemPrompt(event.prompt)) return '';
     return JSON.stringify({
       hookSpecificOutput: {
         hookEventName: 'UserPromptSubmit',
@@ -50,7 +59,7 @@ function run(stdinText) {
   }
 }
 
-module.exports = { detectOverride, buildContext, run };
+module.exports = { detectOverride, buildContext, run, isSystemPrompt };
 
 if (require.main === module) {
   let input = '';

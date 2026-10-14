@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { detectOverride } = require('./route-hook.js');
+const { detectOverride, isSystemPrompt } = require('./route-hook.js');
 const { dataDir, appendEvent } = require('../dashboard/store.js');
 
 const safe = (s) => String(s || 'x').replace(/[^\w.-]/g, '_');
@@ -26,6 +26,7 @@ function handle(event, env = process.env, now = Date.now()) {
     const name = event.hook_event_name;
 
     if (name === 'UserPromptSubmit' && typeof event.prompt === 'string') {
+      if (isSystemPrompt(event.prompt)) return;
       fs.mkdirSync(dataDir(env), { recursive: true });
       prunePending(env, now);
       fs.writeFileSync(

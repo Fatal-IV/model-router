@@ -111,3 +111,13 @@ test('the prompt summary is not reused by a later Agent call', () => {
   assert.strictEqual(evs.find((e) => e.id === 'r1').summary, 'ilk istek');
   assert.strictEqual(evs.find((e) => e.id === 'r2').summary, 'ilk istek');
 });
+
+test('a system notification does not overwrite the pending prompt summary', () => {
+  const env = tmpEnv();
+  handle({ ...base, hook_event_name: 'UserPromptSubmit', prompt: 'gerçek istek' }, env, 1);
+  handle({ ...base, hook_event_name: 'UserPromptSubmit', prompt: '[SYSTEM NOTIFICATION - NOT USER INPUT]\n@opus bildirim' }, env, 2);
+  handle({ ...base, hook_event_name: 'PreToolUse', tool_name: 'Agent', tool_use_id: 'n1', tool_input: { model: 'haiku' } }, env, 3);
+  const [e] = readEvents(env);
+  assert.strictEqual(e.summary, 'gerçek istek');
+  assert.strictEqual(e.source, 'auto');
+});
