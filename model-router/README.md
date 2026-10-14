@@ -46,7 +46,7 @@ Oturum başladığında yalnızca kendi bilgisayarında çalışan bir panel oto
 http://localhost:37888
 ```
 
-(Port doluysa 37889, 37890… denenir.) Panel, projeleri klasör adına göre listeler ve her projede hangi isteğin hangi modele gittiğini, kaynağını (otomatik veya `@etiket`), gerekçeyi, durumu ve süreyi gösterir.
+(Port doluysa 37889, 37890… denenir.) Her oturum başlarken Claude Code, panelin gerçek adresini tek satırla gösterir: `Model Router paneli: http://localhost:37888`. Panel, projeleri klasör adına göre listeler ve her projede hangi isteğin hangi modele gittiğini, kaynağını (otomatik veya `@etiket`), gerekçeyi, durumu ve süreyi gösterir.
 
 - Kayıtlar `~/.claude/model-router/events.jsonl` dosyasında tutulur ve bilgisayarından çıkmaz. Sunucu yalnızca `127.0.0.1` üzerinde dinler.
 - Kayıtlarda isteğinin ilk 200 karakteri bulunur; hassas bilgi içerebileceğini unutma. Panelden "Kayıtları temizle" ile hepsini silebilirsin.

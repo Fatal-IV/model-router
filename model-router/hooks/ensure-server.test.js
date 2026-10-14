@@ -68,7 +68,7 @@ test('the hook does not start a second server when one is running', async () => 
     writeInfo(env, { pid: process.pid, port });
     const r = await runAsync(env);
     assert.strictEqual(r.status, 0);
-    assert.strictEqual(r.stdout, '');
+    assert.strictEqual(JSON.parse(r.stdout).systemMessage.includes(`http://localhost:${port}`), true);
     await new Promise((res) => setTimeout(res, 400));
     const info = JSON.parse(fs.readFileSync(path.join(env.MODEL_ROUTER_DIR, 'server.json'), 'utf8'));
     assert.strictEqual(info.port, port);
@@ -79,8 +79,10 @@ test('the hook does not start a second server when one is running', async () => 
 
 test('the hook starts a detached server when none is running', async () => {
   const env = tmpEnv();
+  writeInfo(env, { pid: 2147483646, port: 1 });
   const r = spawnSync('node', [HOOK], { env: { ...process.env, ...env }, encoding: 'utf8' });
   assert.strictEqual(r.status, 0);
+  const msg = JSON.parse(r.stdout).systemMessage;
   let info;
   for (let i = 0; i < 30 && !info; i++) {
     await new Promise((res) => setTimeout(res, 100));
@@ -92,6 +94,7 @@ test('the hook starts a detached server when none is running', async () => {
   }
   try {
     assert.ok(info && info.port, 'server.json yazılmadı');
+    assert.ok(msg.includes(`http://localhost:${info.port}`), msg);
     assert.strictEqual(await isRunning(env), true);
   } finally {
     if (info) try { process.kill(info.pid); } catch { /* zaten kapalı */ }
