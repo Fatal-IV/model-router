@@ -4,6 +4,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { dataDir } = require('../dashboard/store.js');
+const autoUpdate = require('../dashboard/autoupdate.js');
 
 const infoFile = (env) => path.join(dataDir(env), 'server.json');
 
@@ -72,7 +73,11 @@ async function main() {
     const info = await ensurePanel();
     if (info) {
       process.stdout.write(
-        JSON.stringify({ systemMessage: `Model Router paneli: http://localhost:${info.port}` })
+        JSON.stringify({
+          systemMessage:
+            `Model Router paneli: http://localhost:${info.port}` +
+            (autoUpdate.status() ? '' : ' (otomatik güncelleme için: /model-router:auto-update on)'),
+        })
       );
     }
   } catch {

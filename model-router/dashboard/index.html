@@ -6,180 +6,223 @@
 <title>Model Router Paneli</title>
 <style>
   :root {
-    --bg: #f4f6f9;
-    --surface: #ffffff;
-    --surface-2: #eef1f6;
-    --ink: #161b26;
-    --ink-2: #4a5468;
-    --ink-3: #7a8499;
-    --line: #e1e6ee;
-    --focus: #3d6bdc;
-    --haiku: #1fa37a;
-    --sonnet: #3d6bdc;
-    --opus: #d9822b;
-    --fable: #8a4fd6;
-    --inherit: #8a93a6;
-    --ok: #1fa37a;
-    --err: #d64545;
-    --radius: 12px;
-    color-scheme: light dark;
+    --bg: #070a12;
+    --bg-2: #0b1020;
+    --glass: rgba(18, 24, 42, .66);
+    --glass-2: rgba(28, 36, 62, .6);
+    --line: rgba(148, 163, 214, .16);
+    --line-2: rgba(148, 163, 214, .3);
+    --ink: #eef1fb;
+    --ink-2: #b4bcd6;
+    --ink-3: #7d87a8;
+    --haiku: #2ee6a6;
+    --sonnet: #5b8cff;
+    --opus: #ffa94d;
+    --fable: #b57bff;
+    --inherit: #8590ad;
+    --ok: #2ee6a6;
+    --err: #ff6b7d;
+    --accent: #7b8cff;
+    --radius: 18px;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    color-scheme: dark light;
   }
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root {
-      --bg: #0f131b;
-      --surface: #171c27;
-      --surface-2: #1f2633;
-      --ink: #e8ecf4;
-      --ink-2: #aab3c5;
-      --ink-3: #7c869b;
-      --line: #273044;
-      --focus: #7b9bf0;
-      --haiku: #34c796;
-      --sonnet: #6c92f2;
-      --opus: #f0a04d;
-      --fable: #b283f0;
-      --inherit: #7c869b;
-      --ok: #34c796;
-      --err: #f07070;
+      --bg: #eef1f9; --bg-2: #e4e9f6;
+      --glass: rgba(255, 255, 255, .78); --glass-2: rgba(255, 255, 255, .62);
+      --line: rgba(60, 76, 130, .14); --line-2: rgba(60, 76, 130, .28);
+      --ink: #12172b; --ink-2: #47507a; --ink-3: #7480a6;
+      --haiku: #0fa874; --sonnet: #3b6df0; --opus: #e8851a; --fable: #8f4dea;
+      --inherit: #7480a6; --ok: #0fa874; --err: #e0485c; --accent: #4f61e8;
     }
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; }
+  html, body { margin: 0; min-height: 100%; }
   body {
     background: var(--bg);
     color: var(--ink);
-    font: 15px/1.5 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    font: 15px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   button { font: inherit; color: inherit; }
-  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 10px; }
 
-  .app { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+  /* Arka plan: yavaş akan ışık alanı */
+  .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .aurora i { position: absolute; width: 56vmax; height: 56vmax; border-radius: 50%; filter: blur(90px); opacity: .34; will-change: transform; }
+  .aurora i:nth-child(1) { background: var(--sonnet); left: -18vmax; top: -22vmax; animation: drift1 26s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2) { background: var(--fable); right: -20vmax; top: 8vmax; animation: drift2 32s ease-in-out infinite alternate; }
+  .aurora i:nth-child(3) { background: var(--haiku); left: 18vmax; bottom: -34vmax; opacity: .2; animation: drift3 38s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(14vmax, 10vmax) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-12vmax, 12vmax) scale(.9); } }
+  @keyframes drift3 { to { transform: translate(10vmax, -8vmax) scale(1.2); } }
+  @media (prefers-color-scheme: light) { .aurora i { opacity: .22; } }
 
-  /* Sol sütun */
+  .app { position: relative; z-index: 1; display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: 100vh; }
+
+  /* Kenar çubuğu */
   aside {
-    background: var(--surface);
+    position: sticky; top: 0; height: 100vh; padding: 22px 16px;
+    display: flex; flex-direction: column; gap: 20px;
+    background: var(--glass); backdrop-filter: blur(22px) saturate(1.4); -webkit-backdrop-filter: blur(22px) saturate(1.4);
     border-right: 1px solid var(--line);
-    padding: 22px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
   }
-  .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; font-weight: 650; font-size: 16px; letter-spacing: -0.01em; }
-  .brand .tiers { height: 18px; }
-  .projects { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; flex: 1; margin: 0 -4px; padding: 0 4px; }
-  .project {
-    display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: baseline;
-    text-align: left; width: 100%; padding: 9px 10px; border: 0; border-radius: 8px; background: none; cursor: pointer;
-  }
-  .project:hover { background: var(--surface-2); }
-  .project[aria-current="true"] { background: var(--surface-2); box-shadow: inset 3px 0 0 var(--ink); }
-  .project .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .project .count { color: var(--ink-2); font-weight: 600; }
-  .project .when { grid-column: 1 / -1; color: var(--ink-3); font-size: 13px; }
-  .side-foot { padding: 0 8px; }
+  .brand { display: flex; align-items: center; gap: 12px; padding: 4px 8px; }
+  .logo { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--sonnet), var(--fable)); box-shadow: 0 8px 24px -8px var(--fable), inset 0 1px 0 rgba(255,255,255,.35); }
+  .logo .tiers { height: 20px; }
+  .logo .tiers i { background: #fff !important; opacity: .95; }
+  .brand b { display: block; font-size: 16px; letter-spacing: -.01em; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+  .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: ping 2s ease-out infinite; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 70%, transparent); } 80%, 100% { box-shadow: 0 0 0 9px transparent; } }
 
-  .btn {
-    border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  .projects { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; margin: 0 -6px; padding: 2px 6px; }
+  .project {
+    position: relative; display: grid; grid-template-columns: 1fr auto; gap: 1px 10px; align-items: baseline; width: 100%;
+    text-align: left; padding: 11px 14px; border: 1px solid transparent; border-radius: 14px; background: none; cursor: pointer;
+    transition: background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease);
   }
-  .btn:hover { background: var(--surface-2); }
-  .btn.danger { color: var(--err); border-color: color-mix(in srgb, var(--err) 40%, var(--line)); }
-  .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; }
+  .project:hover { background: var(--glass-2); transform: translateX(3px); }
+  .project[aria-current="true"] { background: var(--glass-2); border-color: var(--line-2); }
+  .project[aria-current="true"]::before { content: ""; position: absolute; left: -7px; top: 22%; bottom: 22%; width: 3px; border-radius: 3px;
+    background: linear-gradient(var(--sonnet), var(--fable)); box-shadow: 0 0 12px var(--fable); animation: grow .5s var(--ease); }
+  @keyframes grow { from { transform: scaleY(0); } }
+  .project .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .project .count { color: var(--ink); font-weight: 700; background: var(--glass-2); border: 1px solid var(--line); border-radius: 999px; padding: 0 9px; font-size: 13px; }
+  .project .when { grid-column: 1 / -1; color: var(--ink-3); font-size: 12.5px; }
+
+  .btn { border: 1px solid var(--line-2); background: var(--glass-2); border-radius: 12px; padding: 8px 14px; cursor: pointer;
+    transition: background .2s, transform .2s var(--ease), border-color .2s; }
+  .btn:hover { background: var(--glass); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn.danger { color: var(--err); border-color: color-mix(in srgb, var(--err) 45%, var(--line)); }
+  .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; animation: pop .35s var(--ease); }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } }
 
   /* Ana alan */
-  main { padding: 34px clamp(18px, 4vw, 48px) 64px; max-width: 1040px; width: 100%; }
-  .head h1 { margin: 0; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; overflow-wrap: anywhere; }
-  .head p { margin: 6px 0 0; color: var(--ink-2); }
+  main { padding: 38px clamp(18px, 4vw, 56px) 80px; max-width: 1120px; width: 100%; min-width: 0; }
+  .head h1 { margin: 0; font-size: clamp(30px, 4vw, 44px); line-height: 1.08; letter-spacing: -.03em; font-weight: 750;
+    background: linear-gradient(120deg, var(--ink) 30%, var(--ink-2)); -webkit-background-clip: text; background-clip: text; color: transparent; overflow-wrap: anywhere; }
+  .head p { margin: 8px 0 0; color: var(--ink-3); }
 
-  /* Model payı: hem özet hem filtre */
-  .mix { margin: 26px 0 8px; }
-  .mixbar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); gap: 2px; }
-  .mixbar .seg { height: 100%; min-width: 4px; transition: flex-grow .35s ease; }
-  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 9px; padding: 7px 12px 7px 10px; cursor: pointer;
-    border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
-  }
-  .chip:hover { background: var(--surface-2); }
-  .chip[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
-  .chip .n { font-weight: 700; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 26px; }
+  .stat { position: relative; padding: 16px 18px; border-radius: var(--radius); background: var(--glass); border: 1px solid var(--line);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); overflow: hidden;
+    transition: transform .35s var(--ease), border-color .35s var(--ease); }
+  .stat:hover { transform: translateY(-4px); border-color: var(--line-2); }
+  .stat::after { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--c, var(--accent)) 22%, transparent), transparent 60%); pointer-events: none; }
+  .stat .v { display: block; font-size: 32px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1; }
+  .stat .l { color: var(--ink-3); font-size: 13px; }
+
+  .mix { margin: 22px 0 6px; padding: 18px; border-radius: var(--radius); background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .mixbar { display: flex; height: 16px; border-radius: 9px; overflow: hidden; background: var(--glass-2); gap: 3px; }
+  .mixbar .seg { height: 100%; min-width: 6px; border-radius: 6px; background: var(--c);
+    box-shadow: 0 0 16px -2px var(--c); transform-origin: left; animation: fill .9s var(--ease) both; transition: opacity .3s, flex-grow .5s var(--ease); }
+  @keyframes fill { from { transform: scaleX(0); } }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 12px; cursor: pointer; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--glass-2); transition: transform .25s var(--ease), border-color .25s, box-shadow .25s, background .25s; }
+  .chip:hover { transform: translateY(-2px); border-color: var(--c); }
+  .chip[aria-pressed="true"] { border-color: var(--c); box-shadow: 0 0 0 1px var(--c), 0 8px 22px -8px var(--c); background: color-mix(in srgb, var(--c) 14%, var(--glass-2)); }
+  .chip .n { font-weight: 750; }
   .chip .pct { color: var(--ink-3); font-size: 13px; }
-  .hint { color: var(--ink-3); font-size: 13px; margin: 10px 0 0; }
+  .hint { color: var(--ink-3); font-size: 13px; margin: 12px 2px 0; }
 
-  /* Seviye çubukları: Haiku 1, Sonnet 2, Opus 3, Fable 4 */
+  /* Seviye çubukları */
   .tiers { display: inline-flex; align-items: flex-end; gap: 2px; height: 16px; }
-  .tiers i { display: block; width: 4px; border-radius: 1.5px; background: var(--line); }
-  .tiers i:nth-child(1) { height: 25%; } .tiers i:nth-child(2) { height: 50%; }
-  .tiers i:nth-child(3) { height: 75%; } .tiers i:nth-child(4) { height: 100%; }
-  .tiers.haiku i:nth-child(-n+1), .tiers.sonnet i:nth-child(-n+2), .tiers.opus i:nth-child(-n+3), .tiers.fable i:nth-child(-n+4) { background: var(--c); }
+  .tiers i { display: block; width: 4px; border-radius: 2px; background: var(--line-2); transform-origin: bottom; }
+  .tiers i:nth-child(1) { height: 25%; } .tiers i:nth-child(2) { height: 50%; } .tiers i:nth-child(3) { height: 75%; } .tiers i:nth-child(4) { height: 100%; }
+  .tiers.haiku i:nth-child(-n+1), .tiers.sonnet i:nth-child(-n+2), .tiers.opus i:nth-child(-n+3), .tiers.fable i:nth-child(-n+4) { background: var(--c); box-shadow: 0 0 8px -1px var(--c); }
   .haiku { --c: var(--haiku); } .sonnet { --c: var(--sonnet); } .opus { --c: var(--opus); } .fable { --c: var(--fable); } .inherit { --c: var(--inherit); }
-  .tiers.inherit i { background: var(--line); }
-  .brand .tiers i { background: var(--ink); }
-  .brand .tiers i:nth-child(1) { background: var(--haiku); } .brand .tiers i:nth-child(2) { background: var(--sonnet); }
-  .brand .tiers i:nth-child(3) { background: var(--opus); } .brand .tiers i:nth-child(4) { background: var(--fable); }
+  .logo .tiers i { background: #fff; }
 
-  /* Kayıt listesi */
-  .day { margin: 30px 0 8px; font-size: 14px; font-weight: 650; color: var(--ink-2); }
-  .log { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  /* Kayıtlar */
+  .day { margin: 34px 0 10px; font-size: 13.5px; font-weight: 650; color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  .day::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line-2), transparent); }
+  .log { display: flex; flex-direction: column; gap: 10px; }
   .row {
-    display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 6px 18px; align-items: start;
-    padding: 14px 18px; border-bottom: 1px solid var(--line); width: 100%; text-align: left; background: none; border-left: 0; border-right: 0; border-top: 0; cursor: pointer;
+    position: relative; display: grid; grid-template-columns: 124px minmax(0, 1fr) auto; gap: 6px 20px; align-items: start; width: 100%; text-align: left;
+    padding: 16px 20px 16px 22px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer;
+    background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); overflow: hidden;
+    transition: transform .35s var(--ease), border-color .3s, background .3s, box-shadow .35s var(--ease);
   }
-  .log .row:last-child { border-bottom: 0; }
-  .row:hover { background: var(--surface-2); }
-  .model { display: inline-flex; align-items: center; gap: 9px; font-weight: 650; color: var(--c); padding-top: 1px; }
-  .model .tiers { height: 14px; }
+  .row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); box-shadow: 0 0 18px var(--c); }
+  .row:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 55%, var(--line)); box-shadow: 0 14px 34px -16px var(--c); }
+  .row.enter { animation: rise .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.985); } }
+  .model { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--c); }
+  .model .tiers { height: 15px; }
   .body .sum { margin: 0; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .row[aria-expanded="true"] .sum { -webkit-line-clamp: unset; display: block; }
-  .body .why { margin: 3px 0 0; color: var(--ink-3); font-size: 13.5px; overflow-wrap: anywhere; }
-  .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-size: 13.5px; color: var(--ink-2); white-space: nowrap; }
+  .body .why { margin: 4px 0 0; color: var(--ink-3); font-size: 13.5px; overflow-wrap: anywhere; }
+  .detail { grid-column: 2 / -1; display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
+  .row[aria-expanded="true"] .detail { grid-template-rows: 1fr; }
+  .detail > div { overflow: hidden; }
+  .detail dl { margin: 10px 0 0; padding-top: 10px; border-top: 1px dashed var(--line-2); display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 13px; color: var(--ink-2); }
+  .detail dt { color: var(--ink-3); } .detail dd { margin: 0; overflow-wrap: anywhere; }
+  .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 13.5px; color: var(--ink-2); white-space: nowrap; }
   .meta .top { display: inline-flex; align-items: center; gap: 8px; }
-  .tag { color: var(--ink-2); background: var(--surface-2); border-radius: 6px; padding: 1px 7px; font-size: 12.5px; font-weight: 600; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--inherit); display: inline-block; }
-  .dot.done { background: var(--ok); } .dot.error { background: var(--err); } .dot.background { background: var(--sonnet); }
-  .dot.running { background: var(--opus); animation: pulse 1.4s ease-in-out infinite; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--opus) 55%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+  .tag { color: var(--ink); background: color-mix(in srgb, var(--accent) 26%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); border-radius: 8px; padding: 0 8px; font-size: 12.5px; font-weight: 650; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--inherit); display: inline-block; }
+  .dot.done { background: var(--ok); box-shadow: 0 0 10px var(--ok); } .dot.error { background: var(--err); box-shadow: 0 0 10px var(--err); }
+  .dot.background { background: var(--sonnet); } .dot.running { background: var(--opus); animation: ping2 1.4s ease-out infinite; }
+  @keyframes ping2 { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--opus) 70%, transparent); } 80%, 100% { box-shadow: 0 0 0 9px transparent; } }
   .time { color: var(--ink-3); }
 
-  .empty { margin-top: 12vh; max-width: 420px; color: var(--ink-2); }
-  .empty h2 { margin: 0 0 8px; color: var(--ink); font-size: 20px; letter-spacing: -0.01em; }
+  .empty { margin-top: 14vh; max-width: 440px; color: var(--ink-2); animation: rise .8s var(--ease) both; }
+  .empty .glyph { width: 64px; height: 64px; border-radius: 20px; margin-bottom: 18px; display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--sonnet), var(--fable)); box-shadow: 0 16px 40px -14px var(--fable); animation: float 4s ease-in-out infinite; }
+  .empty .glyph .tiers { height: 30px; } .empty .glyph .tiers i { width: 6px; background: #fff; }
+  @keyframes float { 50% { transform: translateY(-8px); } }
+  .empty h2 { margin: 0 0 8px; color: var(--ink); font-size: 24px; letter-spacing: -.02em; }
   .empty p { margin: 0; }
+
+  .skeleton { height: 78px; border-radius: var(--radius); margin-bottom: 10px; background: linear-gradient(100deg, var(--glass-2) 30%, var(--glass) 50%, var(--glass-2) 70%); background-size: 220% 100%; animation: shimmer 1.4s linear infinite; }
+  @keyframes shimmer { to { background-position: -220% 0; } }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 30px); opacity: 0; z-index: 5; padding: 11px 18px; border-radius: 14px;
+    background: var(--glass); border: 1px solid var(--line-2); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    transition: opacity .35s, transform .45s var(--ease); pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   @media (max-width: 860px) {
     .app { grid-template-columns: minmax(0, 1fr); }
-    main { min-width: 0; }
     aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 14px; }
-    .projects { flex-direction: row; overflow-x: auto; overflow-y: visible; flex: none; padding-bottom: 4px; }
-    .project { width: auto; min-width: 150px; flex: none; border: 1px solid var(--line); }
-    .project .when { display: none; }
-    .row { grid-template-columns: minmax(0, 1fr); padding: 14px; }
-    .meta { flex-direction: row; align-items: center; justify-content: space-between; white-space: normal; flex-wrap: wrap; gap: 4px 12px; }
+    .projects { flex-direction: row; overflow-x: auto; overflow-y: visible; flex: none; padding-bottom: 6px; }
+    .project { width: auto; min-width: 160px; flex: none; border-color: var(--line); }
+    .project .when, .project[aria-current="true"]::before { display: none; }
+    .row { grid-template-columns: minmax(0, 1fr); padding-left: 20px; }
+    .detail { grid-column: 1; }
+    .meta { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; white-space: normal; gap: 4px 12px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .dot.running { animation: none; }
-    .mixbar .seg { transition: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="app">
   <aside>
-    <div class="brand"><span class="tiers" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Model Router</div>
+    <div class="brand">
+      <span class="logo"><span class="tiers" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>
+      <div><b>Model Router</b><span class="live">canlı izleme</span></div>
+    </div>
     <nav class="projects" id="projects" aria-label="Projeler"></nav>
-    <div class="side-foot" id="foot"></div>
+    <div id="foot"></div>
   </aside>
-  <main id="main"></main>
+  <main id="main"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></main>
 </div>
+<div class="toast" id="toast" role="status"></div>
 <script>
   var MODELS = ['haiku', 'sonnet', 'opus', 'fable'];
   var LABEL = { haiku: 'Haiku', sonnet: 'Sonnet', opus: 'Opus', fable: 'Fable', inherit: 'Ana model' };
   var STATUS = { running: 'çalışıyor', done: 'bitti', error: 'hata', background: 'arka planda' };
-
-  var state = { project: null, filter: null, open: {}, confirming: false, projects: [], events: [] };
+  var state = { project: null, filter: null, open: {}, confirming: false, projects: [], events: [], sig: '', first: true };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -187,10 +230,7 @@
     if (text !== undefined) n.textContent = text;
     return n;
   }
-  function modelKey(m) {
-    m = String(m || 'inherit').toLowerCase();
-    return MODELS.indexOf(m) >= 0 ? m : 'inherit';
-  }
+  function modelKey(m) { m = String(m || 'inherit').toLowerCase(); return MODELS.indexOf(m) >= 0 ? m : 'inherit'; }
   function tiers(key) {
     var t = el('span', 'tiers ' + key);
     t.setAttribute('aria-hidden', 'true');
@@ -204,9 +244,8 @@
     if (s < 86400) return Math.floor(s / 3600) + ' sa önce';
     return Math.floor(s / 86400) + ' gün önce';
   }
-  function clock(ts) {
-    return new Date(ts).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-  }
+  function clock(ts) { return new Date(ts).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }); }
+  function full(ts) { return new Date(ts).toLocaleString('tr-TR'); }
   function dayLabel(ts) {
     var d = new Date(ts), n = new Date();
     var start = function (x) { return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(); };
@@ -221,6 +260,24 @@
   }
   function getJSON(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }); }
 
+  function countUp(node, target, suffix) {
+    suffix = suffix || '';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !state.first) { node.textContent = target + suffix; return; }
+    var t0 = performance.now();
+    (function tick(now) {
+      var p = Math.min(1, (now - t0) / 800), e = 1 - Math.pow(1 - p, 3);
+      node.textContent = Math.round(target * e) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+
+  function toast(text) {
+    var t = document.getElementById('toast');
+    t.textContent = text;
+    t.className = 'toast show';
+    setTimeout(function () { t.className = 'toast'; }, 2600);
+  }
+
   function renderProjects() {
     var nav = document.getElementById('projects');
     nav.textContent = '';
@@ -230,7 +287,7 @@
       b.appendChild(el('span', 'name', p.project));
       b.appendChild(el('span', 'count', String(p.count)));
       b.appendChild(el('span', 'when', ago(p.last)));
-      b.onclick = function () { state.project = p.project; state.filter = null; refresh(); };
+      b.onclick = function () { state.project = p.project; state.filter = null; state.first = true; state.sig = ''; refresh(); };
       nav.appendChild(b);
     });
   }
@@ -250,33 +307,52 @@
     var yes = el('button', 'btn danger', 'Sil');
     yes.onclick = function () {
       fetch('/api/clear', { method: 'POST' }).then(function () {
-        state.confirming = false; state.project = null; state.filter = null; refresh();
+        state.confirming = false; state.project = null; state.filter = null; state.sig = ''; toast('Kayıtlar temizlendi'); refresh();
       });
     };
     var no = el('button', 'btn', 'Vazgeç');
     no.onclick = function () { state.confirming = false; renderFoot(); };
-    box.appendChild(yes);
-    box.appendChild(no);
+    box.appendChild(yes); box.appendChild(no);
     foot.appendChild(box);
   }
 
-  function renderMix(head, events) {
+  function statCard(label, value, suffix, color) {
+    var c = el('div', 'stat');
+    if (color) c.style.setProperty('--c', color);
+    var v = el('span', 'v');
+    countUp(v, value, suffix);
+    c.appendChild(v);
+    c.appendChild(el('span', 'l', label));
+    return c;
+  }
+
+  function renderMix(main, events) {
     var counts = {};
     events.forEach(function (e) { var k = modelKey(e.model); counts[k] = (counts[k] || 0) + 1; });
     var keys = MODELS.concat(['inherit']).filter(function (k) { return counts[k]; });
+
+    var done = events.filter(function (e) { return e.status === 'done'; });
+    var timed = events.filter(function (e) { return typeof e.durationMs === 'number' && e.status !== 'running'; });
+    var avg = timed.length ? Math.round(timed.reduce(function (a, e) { return a + e.durationMs; }, 0) / timed.length / 100) / 10 : 0;
+    var overrides = events.filter(function (e) { return e.source === 'override'; }).length;
+    var stats = el('div', 'stats');
+    stats.appendChild(statCard('toplam yönlendirme', events.length, '', 'var(--accent)'));
+    stats.appendChild(statCard('başarıyla bitti', done.length, '', 'var(--ok)'));
+    stats.appendChild(statCard('ortalama süre (sn)', avg, '', 'var(--sonnet)'));
+    stats.appendChild(statCard('@etiketle seçilen', overrides, '', 'var(--opus)'));
+    main.appendChild(stats);
 
     var mix = el('section', 'mix');
     mix.setAttribute('aria-label', 'Model payı');
     var bar = el('div', 'mixbar');
     keys.forEach(function (k) {
       var seg = el('div', 'seg ' + k);
-      seg.style.background = 'var(--c)';
       seg.style.flexGrow = String(counts[k]);
-      seg.style.opacity = state.filter && state.filter !== k ? '0.25' : '1';
+      seg.style.opacity = state.filter && state.filter !== k ? '0.2' : '1';
+      if (!state.first) seg.style.animation = 'none';
       bar.appendChild(seg);
     });
     mix.appendChild(bar);
-
     var legend = el('div', 'legend');
     keys.forEach(function (k) {
       var chip = el('button', 'chip ' + k);
@@ -285,29 +361,31 @@
       chip.appendChild(el('span', '', LABEL[k]));
       chip.appendChild(el('span', 'n', String(counts[k])));
       chip.appendChild(el('span', 'pct', Math.round((counts[k] / events.length) * 100) + '%'));
-      chip.onclick = function () { state.filter = state.filter === k ? null : k; renderMain(); };
+      chip.onclick = function () { state.filter = state.filter === k ? null : k; state.first = false; render(true); };
       legend.appendChild(chip);
     });
     mix.appendChild(legend);
-    head.appendChild(mix);
+    main.appendChild(mix);
   }
 
-  function renderRow(e) {
+  function renderRow(e, i) {
     var key = modelKey(e.model);
-    var row = el('button', 'row ' + key);
+    var row = el('button', 'row ' + key + (state.first ? ' enter' : ''));
+    row.style.setProperty('--i', String(Math.min(i, 12)));
     row.setAttribute('aria-expanded', String(!!state.open[e.id]));
-    row.onclick = function () { state.open[e.id] = !state.open[e.id]; renderMain(); };
-
+    row.onclick = function () {
+      state.open[e.id] = !state.open[e.id];
+      row.setAttribute('aria-expanded', String(!!state.open[e.id]));
+      state.sig = state.sig.replace(/\|o:.*$/, '') + '|o:' + Object.keys(state.open).filter(function (k) { return state.open[k]; }).join(',');
+    };
     var model = el('span', 'model');
     model.appendChild(tiers(key));
     model.appendChild(document.createTextNode(LABEL[key]));
     row.appendChild(model);
-
     var body = el('div', 'body');
     body.appendChild(el('p', 'sum', e.summary || 'İstek metni kaydedilmedi'));
     if (e.reason) body.appendChild(el('p', 'why', e.reason));
     row.appendChild(body);
-
     var meta = el('div', 'meta');
     var top = el('span', 'top');
     if (e.source === 'override') top.appendChild(el('span', 'tag', '@etiket'));
@@ -319,51 +397,55 @@
     var d = dur(e.durationMs);
     meta.appendChild(el('span', 'time', clock(e.ts) + (d ? ', ' + d : '')));
     row.appendChild(meta);
+
+    var detail = el('div', 'detail');
+    var inner = el('div');
+    var dl = el('dl');
+    [['Başlangıç', full(e.ts)], ['Seçim', e.source === 'override' ? 'kullanıcı (@etiket)' : 'otomatik'], ['Klasör', e.cwd || '—'], ['Süre', d || '—']].forEach(function (p) {
+      dl.appendChild(el('dt', '', p[0])); dl.appendChild(el('dd', '', p[1]));
+    });
+    inner.appendChild(dl); detail.appendChild(inner); row.appendChild(detail);
     return row;
   }
 
-  function renderMain() {
+  function render(force) {
+    var sig = JSON.stringify([state.project, state.filter, state.events.map(function (e) { return [e.id, e.status, e.durationMs]; }), state.projects.length]) + '|o:' + Object.keys(state.open).filter(function (k) { return state.open[k]; }).join(',');
+    if (!force && sig === state.sig) return;
+    state.sig = sig;
+    renderProjects(); renderFoot();
     var main = document.getElementById('main');
     main.textContent = '';
     if (!state.projects.length) {
       var empty = el('div', 'empty');
+      var g = el('div', 'glyph'); g.appendChild(tiers('inherit')); empty.appendChild(g);
       empty.appendChild(el('h2', '', 'Henüz yönlendirme yok'));
-      empty.appendChild(el('p', '', 'Claude Code’da bir kodlama isteği ver. İsteğin hangi modele gittiği burada görünecek.'));
+      empty.appendChild(el('p', '', 'Claude Code’da bir kodlama isteği ver. İsteğin hangi modele gittiği burada canlı olarak görünecek.'));
       main.appendChild(empty);
       return;
     }
-    var all = state.events;
+    var all = state.events, last = all[0];
     var head = el('div', 'head');
     head.appendChild(el('h1', '', state.project || ''));
-    var last = all[0];
     head.appendChild(el('p', '', all.length + ' yönlendirme' + (last ? ', en son ' + ago(last.ts) : '')));
     main.appendChild(head);
     renderMix(main, all);
     if (all.length) main.appendChild(el('p', 'hint', 'Bir modele tıklayarak listeyi süzebilirsin. Ayrıntı için satıra tıkla.'));
-
     var shown = state.filter ? all.filter(function (e) { return modelKey(e.model) === state.filter; }) : all;
     var lastDay = null, log = null;
-    shown.forEach(function (e) {
+    shown.forEach(function (e, i) {
       var day = dayLabel(e.ts);
-      if (day !== lastDay) {
-        main.appendChild(el('h2', 'day', day));
-        log = el('div', 'log');
-        main.appendChild(log);
-        lastDay = day;
-      }
-      log.appendChild(renderRow(e));
+      if (day !== lastDay) { main.appendChild(el('h2', 'day', day)); log = el('div', 'log'); main.appendChild(log); lastDay = day; }
+      log.appendChild(renderRow(e, i));
     });
+    state.first = false;
   }
 
   function refresh() {
     getJSON('/api/projects').then(function (list) {
       state.projects = list;
-      if (!list.length) { state.project = null; state.events = []; renderProjects(); renderFoot(); renderMain(); return; }
+      if (!list.length) { state.project = null; state.events = []; render(); return; }
       if (!state.project || !list.some(function (p) { return p.project === state.project; })) state.project = list[0].project;
-      return getJSON('/api/events?project=' + encodeURIComponent(state.project)).then(function (events) {
-        state.events = events;
-        renderProjects(); renderFoot(); renderMain();
-      });
+      return getJSON('/api/events?project=' + encodeURIComponent(state.project)).then(function (events) { state.events = events; render(); });
     }).catch(function () {});
   }
 

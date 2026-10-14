@@ -103,6 +103,10 @@ flowchart LR
 
 <br/>
 
+## Güncellemeler
+
+Yeni sürümleri kendiliğinden almak için bir kez `/model-router:auto-update on` yaz. Komut, ayar dosyana (`~/.claude/settings.json`) yalnızca bu marketplace için bir `autoUpdate` girdisi ekler ve önce yedeğini alır. Kapatmak için `/model-router:auto-update off`, durumu görmek için `/model-router:auto-update`. Bu işlem yalnızca sen yazarsan yapılır. Elle yapmak istersen: `/plugin` > Marketplaces > Enable auto-update.
+
 ## Sınırlamalar
 
 > [!NOTE]

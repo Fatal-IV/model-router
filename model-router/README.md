@@ -61,6 +61,10 @@ http://localhost:37888
 - **Panel hook'ları** (`hooks/capture-hook.js`, `hooks/ensure-server.js`): alt ajan çağrılarını kaydeder ve paneli başlatır.
 - **Skill** (`skills/model-routing`): hafif kod incelemesiyle etki alanını ölçer, seviyeyi seçer, bildirir ve `Agent` aracını `model` parametresiyle çağırır.
 
+## Güncellemeler
+
+Yeni sürümleri kendiliğinden almak için bir kez `/model-router:auto-update on` yaz. Komut, ayar dosyana (`~/.claude/settings.json`) yalnızca bu marketplace için bir `autoUpdate` girdisi ekler ve önce yedeğini alır. Kapatmak için `/model-router:auto-update off`, durumu görmek için `/model-router:auto-update`. Bu işlem yalnızca sen yazarsan yapılır. Elle yapmak istersen: `/plugin` > Marketplaces > Enable auto-update.
+
 ## Sınırlamalar
 
 - Hook yalnızca skill'in tetiklenmesini sağlar; seviye kararı modelin yargısıdır ve her zaman doğru olmayabilir. Yanlış seçimi `@model` ile düzeltebilirsin.
