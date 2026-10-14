@@ -73,6 +73,14 @@ Büyük/küçük harf fark etmez, `@opus'la` gibi ekli yazım da çalışır. So
 
 <br/>
 
+## Yönlendirme paneli
+
+Oturum başlayınca bilgisayarında otomatik bir panel açılır: **`http://localhost:37888`**. Proje adına göre hangi istekte hangi modelin kullanıldığını, kaynağını, durumunu ve süresini gösterir.
+
+Kayıtlar yalnızca senin diskinde (`~/.claude/model-router/`) tutulur ve sunucu sadece `127.0.0.1` üzerinde dinler. Kayıtlarda isteklerinin ilk 200 karakteri bulunur; panelden tek tıkla silebilirsin.
+
+<br/>
+
 ## Nasıl çalışır?
 
 ```mermaid

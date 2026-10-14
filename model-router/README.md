@@ -38,9 +38,24 @@ Belirsizlikte bir üst seviye seçilir. Soru, açıklama ve sohbet isteklerinde 
 @haiku bu butonun rengini yeşil yap
 ```
 
+## Yönlendirme paneli
+
+Oturum başladığında yalnızca kendi bilgisayarında çalışan bir panel otomatik açılır:
+
+```
+http://localhost:37888
+```
+
+(Port doluysa 37889, 37890… denenir.) Panel, projeleri klasör adına göre listeler ve her projede hangi isteğin hangi modele gittiğini, kaynağını (otomatik veya `@etiket`), gerekçeyi, durumu ve süreyi gösterir.
+
+- Kayıtlar `~/.claude/model-router/events.jsonl` dosyasında tutulur ve bilgisayarından çıkmaz. Sunucu yalnızca `127.0.0.1` üzerinde dinler.
+- Kayıtlarda isteğinin ilk 200 karakteri bulunur; hassas bilgi içerebileceğini unutma. Panelden "Kayıtları temizle" ile hepsini silebilirsin.
+- `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıyken yönlendirme olmadığı için kayıt da tutulmaz.
+
 ## Nasıl çalışır
 
 - **Hook** (`hooks/route-hook.js`): her istekte çalışır, override etiketini yakalar ve Claude'a `model-routing` skill'ini hatırlatan bağlam ekler. İsteği asla engellemez.
+- **Panel hook'ları** (`hooks/capture-hook.js`, `hooks/ensure-server.js`): alt ajan çağrılarını kaydeder ve paneli başlatır.
 - **Skill** (`skills/model-routing`): hafif kod incelemesiyle etki alanını ölçer, seviyeyi seçer, bildirir ve `Agent` aracını `model` parametresiyle çağırır.
 
 ## Sınırlamalar

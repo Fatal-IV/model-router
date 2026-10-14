@@ -1,7 +1,7 @@
 {
   "name": "model-router",
   "displayName": "Model Router",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Kodlama değişikliği isteklerini boyut ve etki alanına göre Haiku, Sonnet, Opus veya Fable alt ajanına otomatik yönlendirir ve seçimi bildirir.",
   "author": {
     "name": "IK Software"

@@ -1,6 +1,18 @@
 {
-  "description": "Model Router: override etiketlerini yakalar ve yönlendirme skill'ini hatırlatır",
+  "description": "Model Router: override etiketlerini yakalar, yönlendirme skill'ini hatırlatır ve yönlendirme panelini besler",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/ensure-server.js"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
@@ -8,6 +20,38 @@
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/route-hook.js"],
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/capture-hook.js"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/capture-hook.js"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/capture-hook.js"],
             "timeout": 10
           }
         ]
