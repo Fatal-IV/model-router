@@ -1,0 +1,17 @@
+{
+  "description": "Model Router: override etiketlerini yakalar ve yönlendirme skill'ini hatırlatır",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/route-hook.js"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
