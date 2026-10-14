@@ -1,100 +1,111 @@
 <div align="center">
 
-# 🧭 Model Router
+<h1>Model Router</h1>
 
-**Claude Code için otomatik model yönlendirme.**
-İsteğin boyutuna ve etki alanına bakar, işi doğru modele devreder.
+<p><strong>Her iş için doğru model.</strong><br/>
+Claude Code isteğini okur, kapsamına bakar ve işi Haiku, Sonnet, Opus veya Fable'a otomatik devreder.</p>
 
-`Haiku` · `Sonnet` · `Opus` · `Fable`
+<p>
+  <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-D97757?style=flat-square">
+  <img alt="Node.js" src="https://img.shields.io/badge/Node.js-gerekli-339933?style=flat-square&logo=node.js&logoColor=white">
+  <img alt="Lisans: MIT" src="https://img.shields.io/badge/lisans-MIT-blue?style=flat-square">
+</p>
+
+<pre>→ Opus'a yönlendirildi: 12 dosyayı etkileyen refactor</pre>
 
 </div>
 
----
+<br/>
 
-Küçük bir yazım hatası için en güçlü modeli, karmaşık bir refactor için en hafif modeli kullanmak zorunda değilsin. **Model Router**, kodlama isteğini inceler, kapsamına uygun modelde bir alt ajan başlatır ve ne seçtiğini sana söyler:
+## Neden?
 
-```
-→ Opus'a yönlendirildi: 12 dosyayı etkileyen refactor
-```
+Yazım hatası düzeltmek için en güçlü modeli, mimari bir değişiklik için en hafif modeli kullanmak zorunda değilsin. Model Router her kodlama isteğini ölçer, kapsamına uygun modelde bir alt ajan başlatır ve **ne seçtiğini sana söyler**. Ana konuşmanın modeli değişmez; sonuç özetlenerek sana döner.
 
-Ana konuşmanın modeli değişmez. İş, seçilen modelle çalışan bir alt ajanda yapılır ve sonucu sana özetlenerek döner.
+<table>
+<tr>
+<td width="25%"><b>Otomatik</b><br/>İstek metni ve hafif kod incelemesiyle seçim yapar.</td>
+<td width="25%"><b>Şeffaf</b><br/>Her yönlendirmede model ve gerekçe tek satırla bildirilir.</td>
+<td width="25%"><b>Kontrol sende</b><br/><code>@opus</code> gibi bir etiketle seçimi sen yaparsın.</td>
+<td width="25%"><b>Rahatsız etmez</b><br/>Soru ve sohbetlerde devreye girmez, isteği engellemez.</td>
+</tr>
+</table>
 
-## ✨ Özellikler
+<br/>
 
-- **Otomatik seçim:** İstek metni ve hafif bir kod incelemesiyle (etkilenen dosya ve modül sayısı) model seçilir.
-- **Şeffaflık:** Her yönlendirmede hangi modelin neden seçildiği tek satırla bildirilir.
-- **Tam kontrol:** İsteğe `@haiku`, `@sonnet`, `@opus` veya `@fable` ekleyerek seçimi sen yaparsın. Senin seçimin her zaman kazanır.
-- **Sessiz kalır:** Soru, açıklama ve sohbet isteklerinde devreye girmez.
-- **İsteği engellemez:** Hook hata verse bile isteğin normal şekilde devam eder.
-
-## 🚀 Kurulum
-
-Claude Code içinde:
-
-```
-/plugin marketplace add Fatal-IV/model-router
-/plugin install model-router@ik-software-plugins
-```
-
-Kabuktan:
+## Kurulum
 
 ```bash
 claude plugin marketplace add Fatal-IV/model-router
 claude plugin install model-router@ik-software-plugins
 ```
 
-> **Gereksinim:** PATH üzerinde [Node.js](https://nodejs.org). Hook bir Node betiğidir; Node yoksa her istekte "hook error" bildirimi görürsün. Claude Code'u npm ile kurduysan Node zaten vardır.
+Claude Code içinden de olur: `/plugin marketplace add Fatal-IV/model-router`, ardından `/plugin install model-router@ik-software-plugins`. Kurulumdan sonra `/reload-plugins` yeterli.
 
-Kurulumdan sonra `/reload-plugins` çalıştır. Başka bir ayar gerekmez.
+> [!IMPORTANT]
+> PATH üzerinde [Node.js](https://nodejs.org) olmalı. Hook bir Node betiğidir; Node yoksa her istekte "hook error" bildirimi görürsün. Claude Code'u npm ile kurduysan Node zaten vardır.
 
-## 🎯 Hangi iş hangi modele gider?
+<br/>
 
-| Model | Ne zaman | Örnek |
-|---|---|---|
-| **Haiku** | Tek dosya, mekanik değişiklik | Yazım hatası, renk veya isim değişikliği, yorum ekleme |
-| **Sonnet** | Birkaç dosyayı etkileyen normal iş | Avatar yükleme ekleme, form doğrulama hatası düzeltme |
-| **Opus** | Çok dosyalı, modüller arası değişiklik | Auth katmanını refactor etme, zor bir hatayı ayıklama |
-| **Fable** | Mimari kararlar, çok yüksek riskli veya belirsiz işler | Monolitten servis mimarisine geçiş |
+## Hangi iş hangi modele gider?
 
-İki seviye arasında kalırsa **bir üst seviye** seçilir.
+| | Model | Ne zaman | Örnek |
+|:-:|---|---|---|
+| ⚡ | **Haiku** | Tek dosya, mekanik değişiklik | Yazım hatası, renk veya isim değişikliği |
+| ⚖️ | **Sonnet** | Birkaç dosyayı etkileyen normal iş | Avatar yükleme ekleme, doğrulama hatası düzeltme |
+| 🧠 | **Opus** | Çok dosyalı, modüller arası değişiklik | Auth refactor'ü, zor hata ayıklama |
+| 🏛️ | **Fable** | Mimari, çok yüksek riskli veya belirsiz işler | Monolitten servis mimarisine geçiş |
 
-## 🕹️ Modeli kendin seç
+İki seviye arasında kalırsa bir üst seviye seçilir.
+
+<br/>
+
+## Modeli kendin seç
+
+İsteğin herhangi bir yerine bir etiket ekle. Senin seçimin her zaman otomatik seçimin önüne geçer.
 
 ```text
-@haiku bu butonun rengini yeşil yap
+@haiku butonun rengini yeşil yap
 @opus'la auth katmanını refactor et
 @fable projeyi servis mimarisine böl
 ```
 
-Etiket cümlenin herhangi bir yerinde olabilir (büyük/küçük harf fark etmez, `@opus'la` gibi ekli yazım da çalışır). `@haiku bu fonksiyon ne yapıyor?` gibi bir soruda bile seçtiğin model kullanılır.
+Büyük/küçük harf fark etmez, `@opus'la` gibi ekli yazım da çalışır. Soru bile olsa seçtiğin model kullanılır: `@haiku bu fonksiyon ne yapıyor?`
 
-## ⚙️ Nasıl çalışır?
+<br/>
+
+## Nasıl çalışır?
 
 ```mermaid
-flowchart TD
-    A[Kullanıcı isteği] --> B{Hook: @model etiketi var mı?}
-    B -- evet --> F[Seçilen modelle alt ajana devret]
-    B -- hayır --> C{Kodlama değişikliği mi?}
-    C -- hayır --> D[Ana oturum cevaplar]
-    C -- evet --> E[Hafif inceleme: grep/glob ile etki alanı]
-    E --> G[Seviye eşlemesi]
-    G --> H[Bildirim satırı]
-    H --> F
-    F --> I[Sonuç özetlenerek döner]
+flowchart LR
+    A([İstek]) --> B{@model<br/>etiketi?}
+    B -- var --> F[Alt ajan<br/>seçilen model]
+    B -- yok --> C{Kod<br/>değişikliği?}
+    C -- hayır --> D([Ana oturum cevaplar])
+    C -- evet --> E[Hafif inceleme<br/>etki alanı]
+    E --> G[Seviye seç<br/>+ bildir]
+    G --> F
+    F --> I([Özet döner])
 ```
 
-| Parça | Görevi |
-|---|---|
-| `hooks/route-hook.js` | Her istekte çalışır, `@model` etiketini yakalar ve Claude'a yönlendirme skill'ini hatırlatır. İsteği asla engellemez. |
-| `skills/model-routing` | Etki alanını ölçer, seviyeyi seçer, bildirir ve `Agent` aracını `model` parametresiyle çağırır. |
+- **`hooks/route-hook.js`** her istekte çalışır, `@model` etiketini yakalar ve Claude'a yönlendirme skill'ini hatırlatır. İsteği asla engellemez.
+- **`skills/model-routing`** etki alanını ölçer, seviyeyi seçer, bildirir ve `Agent` aracını `model` parametresiyle çağırır.
 
-## ⚠️ Bilinen sınırlamalar
+<br/>
 
-- Hook yalnızca skill'in tetiklenmesini sağlar. **Seviye kararı modelin yargısıdır** ve her zaman doğru olmayabilir. Yanlış seçimi `@model` ile düzeltebilirsin.
-- `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıysa çağrı başına model seçilemez; yönlendirme bu durumda devre dışı kalır ve sana bildirilir.
-- Ana oturumun kendisi hiçbir zaman model değiştirmez; yönlendirme alt ajan üzerinden yapılır.
+## Sınırlamalar
 
-## 🛠️ Geliştirme
+> [!NOTE]
+> Hook yalnızca skill'in tetiklenmesini sağlar. **Seviye kararı modelin yargısıdır** ve her zaman doğru olmayabilir. Yanlış seçimi `@model` ile düzeltebilirsin.
+
+- `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıysa çağrı başına model seçilemez. Yönlendirme bu durumda devre dışı kalır ve sana bildirilir.
+- Yönlendirme alt ajan üzerinden yapılır; ana oturumun kendi modeli değişmez.
+
+<br/>
+
+<details>
+<summary><b>Geliştirme</b></summary>
+
+<br/>
 
 ```bash
 # Hook testleri
@@ -108,8 +119,11 @@ claude plugin validate .
 claude --plugin-dir ./model-router
 ```
 
-Elle doğrulama senaryoları: [`model-router/tests/scenarios.md`](model-router/tests/scenarios.md). Tasarım ve plan belgeleri: [`docs/superpowers`](docs/superpowers).
+Elle doğrulama senaryoları: [`model-router/tests/scenarios.md`](model-router/tests/scenarios.md)
 
-## 📄 Lisans
+</details>
 
-MIT
+<div align="center">
+<br/>
+<sub>MIT Lisansı · IK Software</sub>
+</div>
