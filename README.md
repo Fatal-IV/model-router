@@ -75,7 +75,7 @@ Büyük/küçük harf fark etmez, `@opus'la` gibi ekli yazım da çalışır. So
 
 ## Yönlendirme paneli
 
-Oturum başlayınca bilgisayarında otomatik bir panel açılır: **`http://localhost:37888`** (port doluysa bir sonrakini alır; doğru adres her oturum başında Claude Code'da gösterilir). Proje adına göre hangi istekte hangi modelin kullanıldığını, kaynağını, durumunu ve süresini gösterir.
+Oturum başlayınca bilgisayarında otomatik bir panel açılır: **`http://localhost:37888`** (port doluysa bir sonrakini alır; doğru adres her oturum başında Claude Code'da gösterilir; sonradan görmek için `/model-router:panel` yaz). Proje adına göre hangi istekte hangi modelin kullanıldığını, kaynağını, durumunu ve süresini gösterir.
 
 Kayıtlar yalnızca senin diskinde (`~/.claude/model-router/`) tutulur ve sunucu sadece `127.0.0.1` üzerinde dinler. Kayıtlarda isteklerinin ilk 200 karakteri bulunur; panelden tek tıkla silebilirsin.
 

@@ -47,24 +47,29 @@ async function waitForPanel(env, ms) {
   return null;
 }
 
+// Panel çalışmıyorsa başlatır; adresini içeren bilgiyi (pid, port) ya da null döndürür.
+async function ensurePanel(env = process.env) {
+  let info = await runningInfo(env);
+  if (info) return info;
+  try {
+    fs.rmSync(infoFile(env), { force: true }); // eski sunucudan kalan bayat kayıt
+  } catch {
+    /* yok say */
+  }
+  const child = spawn(process.execPath, [path.join(__dirname, '..', 'dashboard', 'server.js')], {
+    detached: true,
+    stdio: 'ignore',
+    windowsHide: true,
+    env,
+  });
+  child.on('error', () => {});
+  child.unref();
+  return waitForPanel(env, 4000);
+}
+
 async function main() {
   try {
-    let info = await runningInfo();
-    if (!info) {
-      try {
-        fs.rmSync(infoFile(process.env), { force: true }); // eski sunucudan kalan bayat kayıt
-      } catch {
-        /* yok say */
-      }
-      const child = spawn(process.execPath, [path.join(__dirname, '..', 'dashboard', 'server.js')], {
-        detached: true,
-        stdio: 'ignore',
-        windowsHide: true,
-      });
-      child.on('error', () => {});
-      child.unref();
-      info = await waitForPanel(process.env, 4000);
-    }
+    const info = await ensurePanel();
     if (info) {
       process.stdout.write(
         JSON.stringify({ systemMessage: `Model Router paneli: http://localhost:${info.port}` })
@@ -75,7 +80,7 @@ async function main() {
   }
 }
 
-module.exports = { isRunning, runningInfo };
+module.exports = { isRunning, runningInfo, ensurePanel };
 
 if (require.main === module) {
   main().finally(() => process.exit(0));
