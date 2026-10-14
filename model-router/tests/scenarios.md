@@ -30,6 +30,8 @@ Oturumu `claude --plugin-dir ./model-router` ile aç, her isteği ver ve bildiri
 |---|---|
 | `@fable README'deki yazım hatasını düzelt` | fable, gerekçe: kullanıcı seçimi |
 | `@haiku auth katmanını refactor et` | haiku, gerekçe: kullanıcı seçimi |
+| `@haiku bu fonksiyon ne yapıyor?` | haiku, gerekçe: kullanıcı seçimi (soru olsa da devredilir) |
+| `@opus'la README'deki yazım hatasını düzelt` | opus (apostrof ekli etiket) |
 | `@OPUS butonun rengini değiştir` | opus (büyük/küçük harf fark etmez) |
 | `@gpt4 butonun rengini değiştir` | override sayılmaz; normal sınıflandırma (haiku) |
 | `ali@opus.com adresini README'ye ekle` | override sayılmaz; normal sınıflandırma (haiku) |

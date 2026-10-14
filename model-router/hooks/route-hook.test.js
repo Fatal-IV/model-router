@@ -19,6 +19,28 @@ test('detects a tag mid-sentence followed by punctuation', () => {
   assert.strictEqual(detectOverride('lütfen @haiku ile yap.'), 'haiku');
 });
 
+test('detects tags with Turkish apostrophe suffixes and wrapping punctuation', () => {
+  assert.strictEqual(detectOverride("@opus'la yap"), 'opus');
+  assert.strictEqual(detectOverride('@opus’u kullan'), 'opus');
+  assert.strictEqual(detectOverride('(@opus)'), 'opus');
+  assert.strictEqual(detectOverride('`@haiku` ile'), 'haiku');
+  assert.strictEqual(detectOverride('"@sonnet"'), 'sonnet');
+  assert.strictEqual(detectOverride('@opus...'), 'opus');
+});
+
+test('override context tells the model to invoke the skill even for questions', () => {
+  const ctx = buildContext('haiku');
+  assert.ok(ctx.includes('Skill aracıyla'));
+  assert.ok(ctx.includes('soru'));
+});
+
+test('context reports when model selection is forced off by the environment', () => {
+  const forced = buildContext(null, { CLAUDE_CODE_SUBAGENT_MODEL_FORCE: '1' });
+  assert.ok(forced.includes('CLAUDE_CODE_SUBAGENT_MODEL_FORCE'));
+  assert.ok(forced.includes('devre dışı'));
+  assert.ok(!buildContext(null, {}).includes('CLAUDE_CODE_SUBAGENT_MODEL_FORCE'));
+});
+
 test('first of several tags wins', () => {
   assert.strictEqual(detectOverride('@haiku ... @opus'), 'haiku');
 });

@@ -8,6 +8,10 @@ Claude Code plugin'i. Kodlama projesinde bir değişiklik veya ekleme istediğin
 
 Ana oturumun modeli değişmez; iş, seçilen modelde bir alt ajanda çalışır ve sonucu özetlenerek döner.
 
+## Gereksinimler
+
+- **Node.js** (PATH üzerinde `node`). Hook bir Node betiğidir; Node yoksa her istekte "hook error" bildirimi görünür. Claude Code'u npm ile kurduysan Node zaten vardır; yerel kurucuyla kurduysan ayrıca Node.js kurman gerekir.
+
 ## Kurulum
 
 Plugin dizinini Claude Code'a ekle (`/plugin` ile bir marketplace üzerinden ya da geliştirme için `claude --plugin-dir ./model-router`).

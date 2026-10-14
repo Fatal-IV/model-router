@@ -1,6 +1,6 @@
 ---
 name: model-routing
-description: Kullanıcı kodlama projesinde bir değişiklik, ekleme, hata düzeltme veya refactor istediğinde, işi boyut ve etki alanına göre uygun modelde (haiku, sonnet, opus, fable) bir alt ajana yönlendirmek için kullanılır. Soru, açıklama ve sohbet isteklerinde kullanılmaz.
+description: Kullanıcı kodlama projesinde bir değişiklik, ekleme, hata düzeltme veya refactor istediğinde, işi boyut ve etki alanına göre uygun modelde (haiku, sonnet, opus, fable) bir alt ajana yönlendirmek için kullanılır. Soru, açıklama ve sohbet isteklerinde kullanılmaz; ancak kullanıcı @haiku, @sonnet, @opus veya @fable ile model seçtiyse istek türünden bağımsız olarak kullanılır.
 ---
 
 # Model Routing
@@ -9,23 +9,23 @@ Kodlama değişikliği isteklerini, kapsamına uygun modelle çalışan bir alt 
 
 **Kural: kapsam içindeki her istek devredilir.** İş ne kadar küçük olursa olsun (tek kelimelik düzeltme dahil) ana oturum dosyayı kendisi düzenlemez; bildirim satırı yazılır ve `Agent` aracı çağrılır. Küçük işlerin en ucuz modele (`haiku`) gitmesi bu skill'in asıl amacıdır. "Alt ajan açmadan doğrudan yapayım" seçeneği yoktur.
 
-## 1. Kapsam kontrolü
+## 1. Override (önce bu kontrol edilir)
 
-Yönlendirme **yalnızca** kodu değiştirecek isteklerde yapılır: özellik ekleme, hata düzeltme, refactor, yapılandırma veya metin değişikliği.
-
-Yönlendirme **yapılmaz**: "bu fonksiyon ne yapıyor?", kod açıklama, kavramsal soru, sohbet. Bunları ana oturumda doğrudan cevapla ve bu skill'in kalanını atla.
+Hook bağlamında kullanıcının bir model seçtiği (`@haiku`, `@sonnet`, `@opus`, `@fable`) belirtilmişse kapsam kontrolünü, sınıflandırmayı ve incelemeyi atla; doğrudan 6. adıma geç ve o modeli kullan. Override, isteğin türünden bağımsız olarak geçerlidir: `@haiku bu fonksiyon ne yapıyor?` gibi bir soru da seçilen modelle bir alt ajana devredilir. Gerekçe satırı `kullanıcı seçimi` olur.
 
 ## 2. Zorlanmış model kontrolü
 
-`CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ortam değişkeni ayarlıysa çağrı başına model verilemez. Bu durumda yönlendirme yapma, işi normal şekilde yap ve kullanıcıya tek satırla bildir: `Model yönlendirme devre dışı: CLAUDE_CODE_SUBAGENT_MODEL_FORCE ayarlı.`
+Hook bağlamında `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` nedeniyle yönlendirmenin devre dışı olduğu belirtilmişse yönlendirme yapma, işi normal şekilde yap ve kullanıcıya tek satırla bildir: `Model yönlendirme devre dışı: CLAUDE_CODE_SUBAGENT_MODEL_FORCE ayarlı.` (Ortam değişkenini hook okur; sen okumaya çalışma.)
 
-## 3. Override
+## 3. Kapsam kontrolü
 
-Hook bağlamında kullanıcının bir model seçtiği (`@haiku`, `@sonnet`, `@opus`, `@fable`) belirtilmişse sınıflandırma ve inceleme adımlarını atla; o modeli kullan. Override, isteğin türünden bağımsız olarak geçerlidir ve gerekçe satırı `kullanıcı seçimi` olur.
+Override yoksa yönlendirme **yalnızca** kodu değiştirecek isteklerde yapılır: özellik ekleme, hata düzeltme, refactor, yapılandırma veya metin değişikliği.
+
+Yönlendirme **yapılmaz**: "bu fonksiyon ne yapıyor?", kod açıklama, kavramsal soru, sohbet. Bunları ana oturumda doğrudan cevapla ve bu skill'in kalanını atla.
 
 ## 4. Hafif inceleme
 
-Override yoksa en fazla yaklaşık 5 arama (Grep/Glob) ile şunları ölç:
+En fazla yaklaşık 5 arama (Grep/Glob) ile şunları ölç:
 
 - İsteğin dokunacağı sembol veya dosyalar ve bunları kullanan yerler (etkilenen dosya ve modül sayısı)
 - Değişiklik mekanik mi, davranışsal mı, mimari mi
