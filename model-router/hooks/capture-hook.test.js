@@ -82,3 +82,32 @@ test('process exits 0 silently on broken stdin', () => {
   assert.strictEqual(r.status, 0);
   assert.strictEqual(r.stdout, '');
 });
+
+test('PostToolUseFailure marks the event as error', () => {
+  const env = tmpEnv();
+  handle({ ...base, hook_event_name: 'UserPromptSubmit', prompt: 'x' }, env, 1000);
+  handle({ ...base, hook_event_name: 'PreToolUse', tool_name: 'Agent', tool_use_id: 'f1', tool_input: { model: 'opus' } }, env, 1000);
+  handle({ ...base, hook_event_name: 'PostToolUseFailure', tool_name: 'Agent', tool_use_id: 'f1', tool_input: { model: 'opus' } }, env, 1500);
+  const [e] = readEvents(env);
+  assert.strictEqual(e.status, 'error');
+  assert.strictEqual(e.durationMs, 500);
+});
+
+test('a background Agent call is not reported as done', () => {
+  const env = tmpEnv();
+  const input = { model: 'sonnet', run_in_background: true };
+  handle({ ...base, hook_event_name: 'PreToolUse', tool_name: 'Agent', tool_use_id: 'b1', tool_input: input }, env, 1);
+  handle({ ...base, hook_event_name: 'PostToolUse', tool_name: 'Agent', tool_use_id: 'b1', tool_input: input, tool_response: {} }, env, 2);
+  assert.strictEqual(readEvents(env)[0].status, 'background');
+});
+
+test('the prompt summary is not reused by a later Agent call', () => {
+  const env = tmpEnv();
+  handle({ ...base, hook_event_name: 'UserPromptSubmit', prompt: 'ilk istek' }, env, 1);
+  const pre = (id) => handle({ ...base, hook_event_name: 'PreToolUse', tool_name: 'Agent', tool_use_id: id, tool_input: { model: 'haiku' } }, env, 2);
+  pre('r1');
+  pre('r2');
+  const evs = readEvents(env);
+  assert.strictEqual(evs.find((e) => e.id === 'r1').summary, 'ilk istek');
+  assert.strictEqual(evs.find((e) => e.id === 'r2').summary, 'ilk istek');
+});

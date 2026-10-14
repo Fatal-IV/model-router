@@ -97,3 +97,21 @@ test('the hook starts a detached server when none is running', async () => {
     if (info) try { process.kill(info.pid); } catch { /* zaten kapalı */ }
   }
 });
+
+test('a second server exits instead of drifting to another port when one already answers', async () => {
+  const env = tmpEnv();
+  const { server, port } = await listen(env);
+  try {
+    const child = spawn('node', [path.join(__dirname, '..', 'dashboard', 'server.js')], {
+      env: { ...process.env, ...env, MODEL_ROUTER_BASE_PORT: String(port) },
+      stdio: 'ignore',
+    });
+    const code = await new Promise((res) => {
+      const t = setTimeout(() => { child.kill(); res('still-running'); }, 3000);
+      child.on('exit', (c) => { clearTimeout(t); res(c); });
+    });
+    assert.strictEqual(code, 0);
+  } finally {
+    server.close();
+  }
+});

@@ -9,10 +9,18 @@ function dataDir(env = process.env) {
 
 const file = (env) => path.join(dataDir(env), 'events.jsonl');
 
+function trimIfLarge(env) {
+  const max = Number(env && env.MODEL_ROUTER_MAX_BYTES) || 5 * 1024 * 1024;
+  if (fs.statSync(file(env)).size <= max) return;
+  const lines = fs.readFileSync(file(env), 'utf8').split('\n').filter(Boolean);
+  fs.writeFileSync(file(env), lines.slice(Math.floor(lines.length / 2)).join('\n') + '\n');
+}
+
 function appendEvent(ev, env = process.env) {
   try {
     fs.mkdirSync(dataDir(env), { recursive: true });
     fs.appendFileSync(file(env), JSON.stringify(ev) + '\n');
+    trimIfLarge(env);
   } catch {
     /* kayıt hatası isteği etkilememeli */
   }

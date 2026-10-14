@@ -10,12 +10,16 @@ function isRunning(env = process.env) {
     let info;
     try {
       info = JSON.parse(fs.readFileSync(path.join(dataDir(env), 'server.json'), 'utf8'));
-      process.kill(info.pid, 0);
+      try {
+        process.kill(info.pid, 0);
+      } catch (e) {
+        if (e.code !== 'EPERM') throw e;
+      }
     } catch {
       return resolve(false);
     }
     const req = http.get(
-      { host: '127.0.0.1', port: info.port, path: '/api/projects', timeout: 1000 },
+      { host: '127.0.0.1', port: info.port, path: '/api/projects', timeout: 2000 },
       (res) => {
         res.resume();
         resolve(res.statusCode === 200);
@@ -34,6 +38,7 @@ async function main() {
       stdio: 'ignore',
       windowsHide: true,
     });
+    child.on('error', () => {});
     child.unref();
   } catch {
     /* panel başlamazsa oturum etkilenmez */

@@ -64,3 +64,13 @@ test('clearEvents empties the store', () => {
   clearEvents(env);
   assert.deepStrictEqual(readEvents(env), []);
 });
+
+test('the event file is trimmed when it grows past the size cap', () => {
+  const env = { ...tmpEnv(), MODEL_ROUTER_MAX_BYTES: '2000' };
+  for (let i = 0; i < 60; i++) appendEvent(start('e' + i, 'p1', i), env);
+  const size = fs.statSync(path.join(env.MODEL_ROUTER_DIR, 'events.jsonl')).size;
+  assert.ok(size <= 2000 + 400, 'size ' + size);
+  const ids = readEvents(env).map((e) => e.id);
+  assert.ok(ids.includes('e59'));
+  assert.ok(!ids.includes('e0'));
+});

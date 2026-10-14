@@ -117,3 +117,31 @@ test('unknown paths return 404', async () => {
     server.close();
   }
 });
+
+test('a malformed request target does not crash the server', async () => {
+  const { server, port } = await setup();
+  try {
+    const net = require('node:net');
+    await new Promise((resolve) => {
+      const s = net.connect(port, '127.0.0.1', () => s.write('GET // HTTP/1.1\r\nHost: 127.0.0.1:' + port + '\r\n\r\n'));
+      s.on('data', () => {});
+      s.on('close', resolve);
+      s.on('error', resolve);
+      setTimeout(() => { s.destroy(); resolve(); }, 500);
+    });
+    assert.strictEqual((await req(port, 'GET', '/api/projects')).status, 200);
+  } finally {
+    server.close();
+  }
+});
+
+test('GET routes reject a foreign Host header (DNS rebinding)', async () => {
+  const { server, port } = await setup([ev('a', 'p1', 1)]);
+  try {
+    for (const p of ['/', '/api/projects', '/api/events?project=p1']) {
+      assert.strictEqual((await req(port, 'GET', p, { Host: 'evil.example' })).status, 403, p);
+    }
+  } finally {
+    server.close();
+  }
+});

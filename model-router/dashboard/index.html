@@ -65,7 +65,7 @@
     if (ms === undefined || ms === null) return '—';
     return ms < 1000 ? ms + ' ms' : (ms / 1000).toFixed(1) + ' sn';
   }
-  var STATUS = { running: 'çalışıyor', done: 'bitti', error: 'hata' };
+  var STATUS = { running: 'çalışıyor', done: 'bitti', error: 'hata', background: 'arka planda' };
 
   function getJSON(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }); }
 
