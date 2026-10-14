@@ -13,6 +13,17 @@ const tmpEnv = () => ({ MODEL_ROUTER_DIR: fs.mkdtempSync(path.join(os.tmpdir(), 
 const writeInfo = (env, info) =>
   fs.writeFileSync(path.join(env.MODEL_ROUTER_DIR, 'server.json'), JSON.stringify(info));
 
+
+function freePort() {
+  return new Promise((resolve) => {
+    const s = require('node:net').createServer();
+    s.listen(0, '127.0.0.1', () => {
+      const p = s.address().port;
+      s.close(() => resolve(String(p)));
+    });
+  });
+}
+
 function runAsync(env) {
   return new Promise((resolve) => {
     const c = spawn('node', [HOOK], { env: { ...process.env, ...env } });
@@ -78,7 +89,7 @@ test('the hook does not start a second server when one is running', async () => 
 });
 
 test('the hook starts a detached server when none is running', async () => {
-  const env = tmpEnv();
+  const env = { ...tmpEnv(), MODEL_ROUTER_BASE_PORT: await freePort() };
   writeInfo(env, { pid: 2147483646, port: 1 });
   const r = spawnSync('node', [HOOK], { env: { ...process.env, ...env }, encoding: 'utf8' });
   assert.strictEqual(r.status, 0);

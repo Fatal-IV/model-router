@@ -10,6 +10,17 @@ const { createServer } = require('./server.js');
 const PANEL = path.join(__dirname, 'panel.js');
 const tmpEnv = () => ({ MODEL_ROUTER_DIR: fs.mkdtempSync(path.join(os.tmpdir(), 'mr-panel-')) });
 
+
+function freePort() {
+  return new Promise((resolve) => {
+    const s = require('node:net').createServer();
+    s.listen(0, '127.0.0.1', () => {
+      const p = s.address().port;
+      s.close(() => resolve(String(p)));
+    });
+  });
+}
+
 function run(env) {
   return new Promise((resolve) => {
     const c = spawn('node', [PANEL], { env: { ...process.env, ...env } });
@@ -35,7 +46,7 @@ test('prints the address of the running panel', async () => {
 });
 
 test('starts the panel when it is down and prints its new address', async () => {
-  const env = tmpEnv();
+  const env = { ...tmpEnv(), MODEL_ROUTER_BASE_PORT: await freePort() };
   const r = await run(env);
   const info = JSON.parse(fs.readFileSync(path.join(env.MODEL_ROUTER_DIR, 'server.json'), 'utf8'));
   try {
