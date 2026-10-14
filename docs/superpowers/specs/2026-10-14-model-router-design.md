@@ -28,7 +28,7 @@ Genel kullanıcıya yönelik bir Claude Code plugin'i. Kullanıcı kendi kodlama
 ## Yapı
 
 ```
-claude-model-router/
+model-router/        # "claude-" önekiyle başlayan plugin adları doğrulamada hata verir
 ├── .claude-plugin/plugin.json
 ├── hooks/hooks.json
 ├── hooks/route-hook.js
@@ -74,8 +74,12 @@ claude-model-router/
 
 Hook yalnızca tetiklenmeyi garanti eder; seviye kararı modelin yargısıdır ve her zaman doğru olmayabilir. Bildirim satırı bu yüzden zorunludur: kullanıcı yanlış seçimi görüp `@model` ile düzeltebilir.
 
-## Doğrulanacak teknik noktalar (uygulama öncesi)
+## Doğrulanmış teknik noktalar (resmi dokümandan, 2026-10-14)
 
-- UserPromptSubmit hook'unun bağlam enjekte etme çıktı biçimi ve plugin içinde `hooks.json` şeması.
-- Agent aracının `model` parametresinin kabul ettiği değerler (haiku, sonnet, opus, fable).
-- Plugin manifest alanları ve dağıtım yapısı.
+- Hook stdin JSON'unda istek metni `prompt` alanındadır.
+- Bağlam enjeksiyonu: exit 0 + stdout'a `{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"..."}}`. Metin sistem hatırlatması olarak eklenir; emir kipi yerine olgu bildiren cümleler yazılmalıdır (prompt-injection korumasını tetiklememek için). 10.000 karakteri aşan bağlam dosyaya yazılıp önizlemeyle değiştirilir. UserPromptSubmit isteği yeniden yazamaz, yalnızca bloklayabilir veya bağlam ekleyebilir.
+- Exit 0 dışındaki kodlar bloklamayan hatadır ama kullanıcıya "hook error" bildirimi gösterilir; bu yüzden hook her durumda exit 0 ile biter.
+- `hooks/hooks.json` üst düzey `"hooks"` anahtarıyla sarılır; `command: "node"` + `args: ["${CLAUDE_PLUGIN_ROOT}/hooks/route-hook.js"]` (exec biçimi, boşluklu yollarda güvenli).
+- Agent aracı çağrı başına `model` parametresi alır; geçerli takma adlar: `haiku`, `sonnet`, `opus`, `fable`.
+- Sınırlama: `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıysa çağrı başına model verilemez. Skill bu durumda yönlendirmenin devre dışı olduğunu kullanıcıya bildirmelidir.
+- Plugin adı kebab-case olmalı ve `claude-`, `anthropic-` ile başlamamalıdır; `claude plugin validate <dizin>` manifesti doğrular.
