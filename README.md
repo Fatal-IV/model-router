@@ -77,14 +77,14 @@ Büyük/küçük harf fark etmez, `@opus'la` gibi ekli yazım da çalışır. So
 
 ```mermaid
 flowchart LR
-    A([İstek]) --> B{@model<br/>etiketi?}
-    B -- var --> F[Alt ajan<br/>seçilen model]
-    B -- yok --> C{Kod<br/>değişikliği?}
-    C -- hayır --> D([Ana oturum cevaplar])
-    C -- evet --> E[Hafif inceleme<br/>etki alanı]
-    E --> G[Seviye seç<br/>+ bildir]
+    A(["İstek"]) --> B{"@model etiketi var mı?"}
+    B -- "var" --> F["Alt ajan<br/>(seçilen model)"]
+    B -- "yok" --> C{"Kod değişikliği mi?"}
+    C -- "hayır" --> D(["Ana oturum cevaplar"])
+    C -- "evet" --> E["Hafif inceleme<br/>(etki alanı)"]
+    E --> G["Seviye seç ve bildir"]
     G --> F
-    F --> I([Özet döner])
+    F --> I(["Özet döner"])
 ```
 
 - **`hooks/route-hook.js`** her istekte çalışır, `@model` etiketini yakalar ve Claude'a yönlendirme skill'ini hatırlatır. İsteği asla engellemez.
