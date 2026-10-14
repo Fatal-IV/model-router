@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Router Paneli</title>
+<style>
+  :root { --bg:#faf9f7; --fg:#1f1d1a; --muted:#6b665e; --card:#fff; --line:#e6e2da;
+          --haiku:#2e9e6b; --sonnet:#3b82c4; --opus:#c4673b; --fable:#8b5cc4; --inherit:#8a857c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161513; --fg:#ece8e1; --muted:#9a948a; --card:#201e1b; --line:#34312c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui, sans-serif; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px; border-bottom:1px solid var(--line); }
+  h1 { font-size:16px; margin:0; }
+  main { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 56px); }
+  nav { border-right:1px solid var(--line); padding:12px; }
+  nav button { display:flex; justify-content:space-between; width:100%; text-align:left; padding:8px 10px; margin-bottom:4px;
+               background:none; color:inherit; border:1px solid transparent; border-radius:6px; cursor:pointer; font:inherit; }
+  nav button.active { background:var(--card); border-color:var(--line); }
+  nav .count { color:var(--muted); }
+  section { padding:16px 20px; overflow-x:auto; }
+  .dist { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .badge { display:inline-block; padding:1px 8px; border-radius:999px; color:#fff; font-size:12px; font-weight:600; background:var(--inherit); }
+  .badge.haiku { background:var(--haiku); } .badge.sonnet { background:var(--sonnet); }
+  .badge.opus { background:var(--opus); } .badge.fable { background:var(--fable); }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:8px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:500; font-size:12px; }
+  td.sum { max-width:420px; word-break:break-word; }
+  .muted { color:var(--muted); }
+  button.danger { padding:6px 12px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:inherit; cursor:pointer; font:inherit; }
+  .empty { color:var(--muted); padding:24px 0; }
+  @media (max-width:700px) { main { grid-template-columns:1fr; } nav { border-right:0; border-bottom:1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Model Router · Yönlendirme Paneli</h1>
+  <button class="danger" id="clear">Kayıtları temizle</button>
+</header>
+<main>
+  <nav id="projects"></nav>
+  <section>
+    <div class="dist" id="dist"></div>
+    <div id="table"></div>
+  </section>
+</main>
+<script>
+  var selected = null;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function badge(model) {
+    var m = String(model || 'inherit').toLowerCase();
+    return el('span', 'badge ' + (['haiku', 'sonnet', 'opus', 'fable'].indexOf(m) >= 0 ? m : ''), m);
+  }
+  function fmtTime(ts) { return new Date(ts).toLocaleString('tr-TR'); }
+  function fmtDur(ms) {
+    if (ms === undefined || ms === null) return '—';
+    return ms < 1000 ? ms + ' ms' : (ms / 1000).toFixed(1) + ' sn';
+  }
+  var STATUS = { running: 'çalışıyor', done: 'bitti', error: 'hata' };
+
+  function getJSON(url) { return fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }); }
+
+  function renderProjects(list) {
+    var nav = document.getElementById('projects');
+    nav.textContent = '';
+    if (!list.length) { nav.appendChild(el('div', 'empty', 'Henüz kayıt yok.')); return; }
+    if (!selected || !list.some(function (p) { return p.project === selected; })) selected = list[0].project;
+    list.forEach(function (p) {
+      var b = el('button', p.project === selected ? 'active' : '');
+      b.appendChild(el('span', '', p.project));
+      b.appendChild(el('span', 'count', String(p.count)));
+      b.onclick = function () { selected = p.project; refresh(); };
+      nav.appendChild(b);
+    });
+  }
+
+  function renderEvents(events) {
+    var dist = document.getElementById('dist');
+    var box = document.getElementById('table');
+    dist.textContent = '';
+    box.textContent = '';
+    if (!events.length) { box.appendChild(el('div', 'empty', 'Bu projede kayıt yok.')); return; }
+
+    var counts = {};
+    events.forEach(function (e) { counts[e.model] = (counts[e.model] || 0) + 1; });
+    Object.keys(counts).forEach(function (m) {
+      var c = el('span', 'muted');
+      c.appendChild(badge(m));
+      c.appendChild(document.createTextNode(' × ' + counts[m]));
+      dist.appendChild(c);
+    });
+
+    var t = el('table');
+    var head = el('tr');
+    ['Zaman', 'İstek', 'Model', 'Kaynak', 'Gerekçe', 'Durum', 'Süre'].forEach(function (h) { head.appendChild(el('th', '', h)); });
+    t.appendChild(head);
+    events.forEach(function (e) {
+      var tr = el('tr');
+      tr.appendChild(el('td', 'muted', fmtTime(e.ts)));
+      tr.appendChild(el('td', 'sum', e.summary || '—'));
+      var m = el('td'); m.appendChild(badge(e.model)); tr.appendChild(m);
+      tr.appendChild(el('td', '', e.source === 'override' ? '@etiket' : 'otomatik'));
+      tr.appendChild(el('td', 'muted', e.reason || '—'));
+      tr.appendChild(el('td', '', STATUS[e.status] || e.status));
+      tr.appendChild(el('td', 'muted', fmtDur(e.durationMs)));
+      t.appendChild(tr);
+    });
+    box.appendChild(t);
+  }
+
+  function refresh() {
+    getJSON('/api/projects').then(function (list) {
+      renderProjects(list);
+      if (!selected) { renderEvents([]); return; }
+      return getJSON('/api/events?project=' + encodeURIComponent(selected)).then(renderEvents);
+    }).catch(function () {});
+  }
+
+  document.getElementById('clear').onclick = function () {
+    if (!confirm('Tüm yönlendirme kayıtları silinsin mi?')) return;
+    fetch('/api/clear', { method: 'POST' }).then(function () { selected = null; refresh(); });
+  };
+
+  refresh();
+  setInterval(refresh, 3000);
+</script>
+</body>
+</html>

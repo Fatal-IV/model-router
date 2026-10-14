@@ -1,0 +1,78 @@
+'use strict';
+const fs = require('node:fs');
+const http = require('node:http');
+const path = require('node:path');
+const { dataDir, readEvents, listProjects, clearEvents } = require('./store.js');
+
+const HOST = '127.0.0.1';
+const BASE_PORT = 37888;
+const PORT_TRIES = 20;
+
+function createServer(env = process.env) {
+  const server = http.createServer((req, res) => {
+    const url = new URL(req.url, 'http://localhost');
+    const json = (obj) => {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(JSON.stringify(obj));
+    };
+
+    if (req.method === 'GET' && url.pathname === '/') {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(fs.readFileSync(path.join(__dirname, 'index.html')));
+    } else if (req.method === 'GET' && url.pathname === '/api/projects') {
+      json(listProjects(readEvents(env)));
+    } else if (req.method === 'GET' && url.pathname === '/api/events') {
+      const project = url.searchParams.get('project');
+      const events = readEvents(env)
+        .filter((e) => e.project === project)
+        .sort((a, b) => b.ts - a.ts)
+        .slice(0, 500);
+      json(events);
+    } else if (req.method === 'POST' && url.pathname === '/api/clear') {
+      const port = server.address().port;
+      const hostOk = [`${HOST}:${port}`, `localhost:${port}`].includes(req.headers.host);
+      const origin = req.headers.origin;
+      const originOk = !origin || origin === `http://${req.headers.host}`;
+      if (!hostOk || !originOk) {
+        res.writeHead(403);
+        return res.end();
+      }
+      clearEvents(env);
+      res.writeHead(204);
+      res.end();
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  });
+  return server;
+}
+
+function listenFrom(server, port, left, done) {
+  const onError = (err) => {
+    server.removeListener('listening', onListening);
+    if (err.code === 'EADDRINUSE' && left > 0) listenFrom(server, port + 1, left - 1, done);
+    else process.exit(1);
+  };
+  const onListening = () => {
+    server.removeListener('error', onError);
+    done(server.address().port);
+  };
+  server.once('error', onError);
+  server.once('listening', onListening);
+  server.listen(port, HOST);
+}
+
+module.exports = { createServer, HOST, BASE_PORT };
+
+if (require.main === module) {
+  const server = createServer();
+  listenFrom(server, BASE_PORT, PORT_TRIES, (port) => {
+    try {
+      fs.mkdirSync(dataDir(), { recursive: true });
+      fs.writeFileSync(path.join(dataDir(), 'server.json'), JSON.stringify({ pid: process.pid, port }));
+    } catch {
+      /* port dosyası yazılamazsa sunucu yine çalışır */
+    }
+  });
+}
