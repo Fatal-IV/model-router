@@ -1,0 +1,14 @@
+{
+  "name": "ik-software-plugins",
+  "owner": { "name": "IK Software" },
+  "description": "IK Software'in Claude Code plugin'leri.",
+  "plugins": [
+    {
+      "name": "model-router",
+      "source": "./model-router",
+      "description": "Kodlama değişikliği isteklerini boyut ve etki alanına göre Haiku, Sonnet, Opus veya Fable alt ajanına otomatik yönlendirir ve seçimi bildirir.",
+      "category": "productivity",
+      "tags": ["model", "routing", "subagent"]
+    }
+  ]
+}
