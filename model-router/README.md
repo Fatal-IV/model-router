@@ -14,7 +14,10 @@ Ana oturumun modeli değişmez; iş, seçilen modelde bir alt ajanda çalışır
 
 ## Kurulum
 
-Plugin dizinini Claude Code'a ekle (`/plugin` ile bir marketplace üzerinden ya da geliştirme için `claude --plugin-dir ./model-router`).
+```
+/plugin marketplace add Fatal-IV/model-router
+/plugin install model-router@ik-software-plugins
+```
 
 ## Seviyeler
 
@@ -45,11 +48,6 @@ Belirsizlikte bir üst seviye seçilir. Soru, açıklama ve sohbet isteklerinde 
 - Hook yalnızca skill'in tetiklenmesini sağlar; seviye kararı modelin yargısıdır ve her zaman doğru olmayabilir. Yanlış seçimi `@model` ile düzeltebilirsin.
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıysa çağrı başına model seçilemez; yönlendirme bu durumda devre dışı kalır.
 
-## Geliştirme
+## Lisans
 
-```
-node --test hooks/route-hook.test.js
-claude plugin validate .
-```
-
-Elle doğrulama senaryoları: `tests/scenarios.md`.
+© 2026 IK Software. Tüm hakları saklıdır. Ayrıntı için kök dizindeki `LICENSE` dosyasına bak.

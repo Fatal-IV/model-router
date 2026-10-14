@@ -8,7 +8,7 @@ Claude Code isteğini okur, kapsamına bakar ve işi Haiku, Sonnet, Opus veya Fa
 <p>
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-D97757?style=flat-square">
   <img alt="Node.js" src="https://img.shields.io/badge/Node.js-gerekli-339933?style=flat-square&logo=node.js&logoColor=white">
-  <img alt="Lisans: MIT" src="https://img.shields.io/badge/lisans-MIT-blue?style=flat-square">
+  <img alt="Lisans: Tüm hakları saklıdır" src="https://img.shields.io/badge/lisans-t%C3%BCm%20haklar%C4%B1%20sakl%C4%B1d%C4%B1r-lightgrey?style=flat-square">
 </p>
 
 <pre>→ Opus'a yönlendirildi: 12 dosyayı etkileyen refactor</pre>
@@ -102,28 +102,7 @@ flowchart LR
 
 <br/>
 
-<details>
-<summary><b>Geliştirme</b></summary>
-
-<br/>
-
-```bash
-# Hook testleri
-node --test model-router/hooks/route-hook.test.js
-
-# Plugin ve marketplace doğrulaması
-claude plugin validate ./model-router
-claude plugin validate .
-
-# Yayınlamadan yerelde dene
-claude --plugin-dir ./model-router
-```
-
-Elle doğrulama senaryoları: [`model-router/tests/scenarios.md`](model-router/tests/scenarios.md)
-
-</details>
-
 <div align="center">
 <br/>
-<sub>MIT Lisansı · IK Software</sub>
+<sub>© 2026 IK Software · Tüm hakları saklıdır</sub>
 </div>
