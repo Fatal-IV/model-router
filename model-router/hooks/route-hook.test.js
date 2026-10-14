@@ -52,6 +52,12 @@ test('buildContext without override mentions the skill but selects no model', ()
   assert.ok(ctx.length < 10000);
 });
 
+test('buildContext without override says the skill is invoked before any code change', () => {
+  const ctx = buildContext(null);
+  assert.ok(ctx.includes('Skill aracıyla'));
+  assert.ok(ctx.includes('dosya düzenlenmeden önce'));
+});
+
 test('run returns UserPromptSubmit additionalContext JSON', () => {
   const out = JSON.parse(run(JSON.stringify({ prompt: '@sonnet x' })));
   assert.strictEqual(out.hookSpecificOutput.hookEventName, 'UserPromptSubmit');

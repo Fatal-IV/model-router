@@ -7,6 +7,8 @@ description: Kullanıcı kodlama projesinde bir değişiklik, ekleme, hata düze
 
 Kodlama değişikliği isteklerini, kapsamına uygun modelle çalışan bir alt ajana devret ve seçimi kullanıcıya bildir. Ana oturumun modeli değişmez.
 
+**Kural: kapsam içindeki her istek devredilir.** İş ne kadar küçük olursa olsun (tek kelimelik düzeltme dahil) ana oturum dosyayı kendisi düzenlemez; bildirim satırı yazılır ve `Agent` aracı çağrılır. Küçük işlerin en ucuz modele (`haiku`) gitmesi bu skill'in asıl amacıdır. "Alt ajan açmadan doğrudan yapayım" seçeneği yoktur.
+
 ## 1. Kapsam kontrolü
 
 Yönlendirme **yalnızca** kodu değiştirecek isteklerde yapılır: özellik ekleme, hata düzeltme, refactor, yapılandırma veya metin değişikliği.

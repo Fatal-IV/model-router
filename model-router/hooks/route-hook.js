@@ -17,7 +17,8 @@ function buildContext(override) {
     );
   }
   return (
-    "Bu istek bir kodlama değişikliği, ekleme veya hata düzeltme ise model-routing skill'i geçerlidir. " +
+    'Bu kurulumda kodlama değişikliği, ekleme ve hata düzeltme istekleri model-routing skill\'i üzerinden yönlendirilir: ' +
+    "model-routing, dosya düzenlenmeden önce Skill aracıyla çağrılır ve işi uygun modeldeki bir alt ajan yapar. " +
     'Soru, açıklama ve sohbet isteklerinde yönlendirme yapılmaz.'
   );
 }
