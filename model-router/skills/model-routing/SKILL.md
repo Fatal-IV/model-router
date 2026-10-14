@@ -44,9 +44,18 @@ Amaç etki alanını kabaca ölçmektir; işi bu aşamada yapma.
 
 İki seviye arasında kaldıysan **bir üst seviyeyi** seç.
 
+## 5b. Maliyet onayı (yalnızca otomatik `opus` veya `fable` seçimi)
+
+Otomatik seçim `opus` ya da `fable` çıktıysa bu modeller maliyetli olduğu için devretmeden önce kullanıcıdan onay al. Kullanıcı `@opus`/`@fable` yazdıysa (1. adım) onay zaten verilmiştir; bu adımı atla.
+
+1. `AskUserQuestion` aracıyla tek soru sor: seçilen modeli ve gerekçeyi söyle, daha maliyetli olduğunu belirt. İki seçenek ver: seçilen modelle devam (`Evet, Opus ile` / `Evet, Fable ile`) ve `Hayır, Sonnet ile`.
+2. Kullanıcı onaylarsa seçilen modelle 6. adıma geç, bildirim satırının sonuna `(onaylandı)` ekle.
+3. Kullanıcı reddederse, cevap vermezse veya soru sorulamıyorsa (araç yok, etkileşimsiz oturum) `sonnet` ile devam et ve bildirim satırı şöyle olsun: `→ Sonnet'e yönlendirildi: <Opus veya Fable> önerildi, onay verilmedi`.
+4. Onay, soruyu cevaplayan o isteğe özeldir; sonraki isteklerde yeniden sor.
+
 ## 6. Bildir ve devret
 
-1. Kullanıcıya tek satır yaz: `→ <Model>'e yönlendirildi: <kısa gerekçe>` (örn. `→ Opus'a yönlendirildi: 12 dosyayı etkileyen refactor`).
+1. Kullanıcıya tek satır yaz (onay adımından geçtiyse oradaki biçimi kullan): `→ <Model>'e yönlendirildi: <kısa gerekçe>` (örn. `→ Opus'a yönlendirildi: 12 dosyayı etkileyen refactor`).
 2. Yalnızca bu skill'in ilk kullanıldığı oturumda, bir satır ekle: `Yanlış seçim olduysa isteğe @haiku, @sonnet, @opus veya @fable ekleyerek modeli sen belirleyebilirsin.`
 3. `Agent` aracını `model` parametresi seçilen takma adla (`haiku`, `sonnet`, `opus`, `fable`) çağır. Prompt'a şunları koy: kullanıcının isteği, incelemede bulduğun dosyalar ve sınırlar, beklenen çıktı.
 

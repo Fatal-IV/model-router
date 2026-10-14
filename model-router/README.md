@@ -30,6 +30,8 @@ Ana oturumun modeli değişmez; iş, seçilen modelde bir alt ajanda çalışır
 
 Belirsizlikte bir üst seviye seçilir. Soru, açıklama ve sohbet isteklerinde yönlendirme yapılmaz.
 
+**Opus ve Fable maliyetlidir.** Otomatik seçim bu iki modelden birini önerirse devretmeden önce sana sorulur. Onaylarsan o modelle, onaylamazsan (ya da soru sorulamıyorsa) Sonnet ile devam edilir. `@opus` veya `@fable` yazarsan bu senin açık tercihindir ve ayrıca sorulmaz.
+
 ## Modeli kendin seç
 
 İsteğe `@haiku`, `@sonnet`, `@opus` veya `@fable` ekle. Bu etiket her zaman otomatik seçimin önüne geçer:

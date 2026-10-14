@@ -36,6 +36,17 @@ Oturumu `claude --plugin-dir ./model-router` ile aç, her isteği ver ve bildiri
 | `@gpt4 butonun rengini değiştir` | override sayılmaz; normal sınıflandırma (haiku) |
 | `ali@opus.com adresini README'ye ekle` | override sayılmaz; normal sınıflandırma (haiku) |
 
+## Maliyet onayı (otomatik opus/fable)
+
+| İstek / durum | Beklenen |
+|---|---|
+| Opus seviyesinde bir istek, kullanıcı onaylar | Önce onay sorusu, sonra opus; satırda `(onaylandı)` |
+| Opus seviyesinde bir istek, kullanıcı reddeder | sonnet; `Opus önerildi, onay verilmedi` |
+| Fable seviyesinde bir istek, kullanıcı onaylar | Önce onay sorusu, sonra fable |
+| Opus seviyesinde istek, etkileşimsiz oturum (`claude -p`) | Soru sorulamaz; sonnet |
+| `@opus ...` veya `@fable ...` | Onay sorulmaz (açık tercih), doğrudan o model |
+| Haiku/Sonnet seviyesinde istek | Onay sorulmaz |
+
 ## Ortam
 
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ile bir kodlama isteği: yönlendirme yok, "devre dışı" bildirimi var.

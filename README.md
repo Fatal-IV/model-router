@@ -57,6 +57,9 @@ Claude Code içinden de olur: `/plugin marketplace add Fatal-IV/model-router`, a
 
 İki seviye arasında kalırsa bir üst seviye seçilir.
 
+> [!NOTE]
+> **Opus ve Fable maliyetlidir.** Otomatik seçim bu iki modelden birini önerirse Claude Code devretmeden önce sana sorar. Onaylarsan o modelle, onaylamazsan (ya da soru sorulamıyorsa) Sonnet ile devam edilir. `@opus` veya `@fable` yazarsan bu senin açık tercihindir ve ayrıca sorulmaz.
+
 <br/>
 
 ## Modeli kendin seç
