@@ -114,10 +114,3 @@ Yeni sürümleri kendiliğinden almak için bir kez `/model-router:auto-update o
 
 - `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` ayarlıysa çağrı başına model seçilemez. Yönlendirme bu durumda devre dışı kalır ve sana bildirilir.
 - Yönlendirme alt ajan üzerinden yapılır; ana oturumun kendi modeli değişmez.
-
-<br/>
-
-<div align="center">
-<br/>
-<sub>© 2026 IK Software · Tüm hakları saklıdır</sub>
-</div>
